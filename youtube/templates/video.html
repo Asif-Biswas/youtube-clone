@@ -1,0 +1,292 @@
+{% extends 'navbar.html' %}
+{% block body %}
+
+<div class="row" style="margin: 8px;">
+    {% for video in video %}
+    <div class="col vl7" style="padding: 8px;">
+        <div class="video-container">
+            <iframe width="400px" height="300px" frameborder="1" allow="fullscreen;"
+            src="https://www.youtube.com/embed/{{video.youtubeVideoId}}"></iframe>
+        </div>
+        <div>
+            <h4>{{video.caption}}</h4>
+            <p style="opacity: 0.8;"><span style="padding-right: 5px;">{{views}}</span> views</p>
+            <div style="margin-top: -24px;">
+            <p style="display: flex; justify-content: flex-end; margin-right: 20px;"><span id="totalLikes" style="padding-right: 5px;">{{totalLikes}}</span>likes</p>
+            <div style="display: flex; justify-content: flex-end; margin-right: 16px;">
+                {% if user.is_authenticated %}
+                    {% if liked %}
+                    <button id="like" onclick="like({{video.id}})" class="hide" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Like</button>
+                    <button id="liked" onclick="cancelLike({{video.id}})" class="hover-grey" style="background-color: rgb(190, 190, 190); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Liked</button>
+                    {%else%}
+                    <button id="like" onclick="like({{video.id}})" class="hover-grey" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Like</button>
+                    <button id="liked" onclick="cancelLike({{video.id}})" class="hide" style="background-color: rgb(190, 190, 190); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Liked</button>
+                    {%endif%}
+                    {%if disliked%}
+                    <button id="dislike" onclick="dislike({{video.id}})" class="hide" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Dislike</button>
+                    <button id="disliked" onclick="cancelDislike({{video.id}})" class="hover-grey" style="background-color: rgb(190, 190, 190); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Disliked</button>
+                    {%else%}
+                    <button id="dislike" onclick="dislike({{video.id}})" class="hover-grey" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Dislike</button>
+                    <button id="disliked" onclick="cancelDislike({{video.id}})" class="hide" style="background-color: rgb(190, 190, 190); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Disliked</button>
+                    {%endif%}
+                {% else %}
+                    <button onclick="registration()" class="hover-grey" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Like</button>
+                    <button onclick="registration()" class="hover-grey" style="background-color: rgb(230, 230, 230); border: none; margin: 0 2px; border-radius: 2px; padding: 4px 24px; cursor: pointer;">Dislike</button>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+        <hr/>
+        <div style="display: flex; width: 100%;">
+            <a href={% url 'channel' video.channel.id %}>
+            <img src="" width="55px" height="55px" style="border-radius: 50%; margin: 8px;"/>
+            </a>
+            <div style="width: 100%;">
+                <div style="display: flex; justify-content: space-between;">
+                    <a href={% url 'channel' video.channel.id %} style="text-decoration: none;">
+                    <div style="display: block;">
+                        <h5>{{video.channel}}</h5>
+                        <p style="margin-top: -8px;"><span id="totalSubscriber" style="padding-right: 5px;">{{subscriber}}</span> Subscriber</p>
+                    </div>
+                    </a>
+                    {% if user.is_authenticated %}
+                        {%if subscribed%}
+                        <button id="subscribe" onclick="subscribe({{video.channel.id}})" class="hover-grey light-grey" style="margin: 16px; background-color: rgb(255, 50, 50); border: none; color: white; border-radius: 5px; padding: 6px 24px; cursor: pointer;">Subscribed</button>
+                        {%else%}
+                        <button id="subscribe" onclick="subscribe({{video.channel.id}})" class="hover-light-grey" style="margin: 16px; background-color: rgb(255, 50, 50); border: none; color: white; border-radius: 5px; padding: 6px 24px; cursor: pointer;">Subscribe</button>
+                        {%endif%}
+                    {% else %}
+                        <button onclick="registration()" class="hover-light-grey" style="margin: 16px; background-color: rgb(255, 50, 50); border: none; color: white; border-radius: 5px; padding: 6px 24px; cursor: pointer;">Subscribe</button>
+                    {% endif %}
+                </div>
+                <p style="white-space: pre-line; padding-right: 16px;">{{video.description}}</p>
+
+            </div>
+        </div>
+        
+        <hr/>
+        <div style="width: 100%;">
+            <h4><span id="totalComments">{{totalComments}}</span> Comments</h4>
+            <div style="display: flex; justify-content: space-between;">
+                <img src="" width="40px" height="40px" style="border-radius: 50%; margin: 0 8px;"/>
+                <input id="comment" required style="width: 75%;" type="text" placeholder="Add a public comment"/>
+                {% if user.is_authenticated %}
+                <button onclick="comment({{video.id}})" style="margin-left: 4px; cursor: pointer; border-radius: 5px; background-color: gainsboro;" class="button hover-grey">Comment</button>
+                {% else %}
+                <button onclick="registration()" style="margin-left: 4px; cursor: pointer; border-radius: 5px; background-color: gainsboro;" class="button hover-grey">Comment</button>
+                {% endif %}
+            </div>
+            <br/>
+            <div id="commentContainer"></div>
+            {%for comment in allComments%}
+            <div style="display: flex;">
+                <img src="" width="40px" height="40px" style="border-radius: 50%; margin: 0 8px;"/>
+                <div>
+                    <h4>{{comment.user.username}}</h4>
+                    <p>{{comment.body}}</p>
+                </div>
+            </div>
+            <hr style="margin-left: 36px; margin-top: 0px;"/>
+            {%endfor%}
+            <div id="moreCommentContainer"></div>
+            {% if allComments.has_next %}
+            <div id="moreCommentsButtonContainer">
+                <button key={{allComments.number}} id="moreComments" onclick="moreComments({{video.id}})" class="button light-grey" style="float: right;">See more comments</button>
+                <br/>
+                <hr/>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+
+
+
+    <div class="col vl4 hide-scrollbar">
+        {% for v in moreVideos %}
+        <a href={% url 'video' v.id %} style="text-decoration: none;">
+        <div style="display: flex; width: 100%; padding: 8px;">
+            <div style="width: 50%;">
+            <div class="video-container">
+                <div class="opcty"></div>
+                <iframe width="400px" height="300px" frameborder="1" allow="fullscreen;"
+                src="https://www.youtube.com/embed/{{v.youtubeVideoId}}"></iframe>
+            </div>
+            </div>
+            <div style="padding-left: 8px; width: 49.99%;">
+                <h6 style="margin-top: -2px;">{{v.caption}}</h6>
+                <p style="margin-top: -8px; font-size: 14px;">{{v.channel}}</p>
+                <p style="margin-top: -12px; font-size: 12px;">{{v.views}} views.</p>
+            </div>
+        </div>
+        </a>
+        {% endfor %}
+        
+    </div>
+</div>
+<script>
+    function moreComments(id){
+        var k = document.getElementById("moreComments").getAttribute("key")
+        document.getElementById("moreComments").setAttribute("key", parseInt(k)+1)
+        var data = JSON.stringify({
+                pageNumber: k,
+            })
+        fetch("/more-comments/"+id+"/", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        for(var i=0; i<result.comments.length; i++){
+                            document.getElementById("moreCommentContainer").innerHTML += '<div style="display: flex;"><img src="" width="40px" height="40px" style="border-radius: 50%; margin: 0 8px;"/><div><h4>'+result.comments[i].username+'</h4><p>'+result.comments[i].body+'</p></div></div><hr style="margin-left: 36px; margin-top: 0px;"/>'
+                        }
+                        if(result.hasMoreComments==false){
+                            document.getElementById("moreCommentsButtonContainer").className = 'hide'
+                        }
+                    }
+                })
+            })
+    }
+
+    function like(id){
+        fetch("/like-video/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        document.getElementById("like").className='hide'
+                        document.getElementById("liked").className='hover-grey'
+                        document.getElementById("disliked").className='hide'
+                        document.getElementById("dislike").className='hover-grey'
+
+                        var totalLikes = document.getElementById("totalLikes").innerHTML
+                        document.getElementById("totalLikes").innerHTML = parseInt(totalLikes) + 1
+                    }
+                })
+            })
+        
+    }
+    function cancelLike(id){
+        fetch("/cancel-like/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        document.getElementById("liked").className='hide'
+                        document.getElementById("like").className='hover-grey'
+
+                        var totalLikes = document.getElementById("totalLikes").innerHTML
+                        document.getElementById("totalLikes").innerHTML = parseInt(totalLikes) - 1
+                    }
+                })
+            })
+        
+    }
+    function dislike(id){
+        fetch("/dislike-video/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        var totalLikes = document.getElementById("totalLikes").innerHTML
+                        if(document.getElementById("like").className==='hide'){
+                            document.getElementById("totalLikes").innerHTML = parseInt(totalLikes) - 1
+                        }
+                        
+                        document.getElementById("dislike").className='hide'
+                        document.getElementById("disliked").className='hover-grey'
+                        document.getElementById("like").className='hover-grey'
+                        document.getElementById("liked").className='hide'
+                    }
+                })
+            })
+        
+    }
+    function cancelDislike(id){
+        fetch("/cancel-dislike/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        document.getElementById("disliked").className='hide'
+                        document.getElementById("dislike").className='hover-grey'
+                    }
+                })
+            })
+        
+    }
+    function subscribe(id){
+        fetch("/subscribe/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        document.getElementById("subscribe").className='light-grey hover-grey'
+                        document.getElementById("subscribe").innerHTML='Subscribed'
+                        var totalSubscriber = document.getElementById("totalSubscriber").innerHTML
+                        document.getElementById("totalSubscriber").innerHTML = parseInt(totalSubscriber) + 1
+                    }else{
+                        var totalSubscriber = document.getElementById("totalSubscriber").innerHTML
+                        document.getElementById("totalSubscriber").innerHTML = parseInt(totalSubscriber) - 1
+                        document.getElementById("subscribe").className='hover-light-grey'
+                        document.getElementById("subscribe").innerHTML='Subscribe'
+                    }
+                })
+            })
+        
+    }
+    function comment(id){
+            var comment = document.getElementById("comment").value
+            
+            var data = JSON.stringify({
+                'comment': comment,
+            })
+            fetch("/comment/"+id+"/", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Contentt-type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        var elmnt = document.getElementById("commentContainer")
+                        elmnt.innerHTML += '<div style="display: flex;"><img src="" width="40px" height="40px" style="border-radius: 50%; margin: 0 8px;"/><div><h4>'+result.username+'</h4><p>'+result.comment+'</p></div></div><hr style="margin-left: 36px; margin-top: 0px;"/>'
+                        document.getElementById("comment").value = ''
+                        var totalComments = document.getElementById("totalComments").innerHTML
+                        document.getElementById("totalComments").innerHTML = parseInt(totalComments) + 1
+                    }
+                })
+            })
+            
+        }
+</script>
+{% endblock body %}

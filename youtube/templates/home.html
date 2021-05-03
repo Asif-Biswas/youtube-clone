@@ -1,0 +1,35 @@
+{% extends 'navbar.html' %}
+{% block body %}
+
+<div class="row" style="margin: 0 8px;">
+
+{% for v in videos %}
+    
+    <div class="col wid" style="padding: 8px;">
+    <a href={% url 'video' v.id %}>
+        <div style="background-color: rgb(250, 250, 250);">
+        <div class="video-container">
+            <div class="opcty"></div>
+            <iframe width="400px" height="300px" frameborder="0" allow="fullscreen;"
+            src="https://www.youtube.com/embed/{{v.youtubeVideoId}}?modestbranding=1&showinfo=0"></iframe>
+        </div>
+    </a>
+        <div style="display: flex;">
+            <a href={% url 'channel' v.channel.id %}><img src="" width="40px" height="40px" style="border-radius: 50%; margin: 8px;"/></a>
+            <a href={% url 'video' v.id %} style="text-decoration: none;">
+            <div>
+                <h6 style="height: 42px; overflow: hidden;">{{v.caption}}</h6>
+                <p style="margin-top: -8px; font-size: 12px">{{v.channel}} . {{v.views}} views</p>
+            </div>
+            </a>
+        </div>
+        </div>
+    </div>
+    
+{% endfor %}
+
+
+
+</div>
+
+{% endblock body %}

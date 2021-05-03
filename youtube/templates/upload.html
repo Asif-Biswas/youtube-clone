@@ -1,0 +1,28 @@
+{% extends 'navbar.html' %}
+{% block body %}
+
+<div style="display: flex; justify-content: center; margin: 36px 16px 0 16px; ">
+    <div style="border: solid 2px grey; border-radius: 5px; min-width: 50%;">
+        <div style="padding: 8px;">
+            <h5>
+                # How to upload: Open a YouTube video in a browser. Copy the <span style="font-weight: bolder;">YouTube Video Id</span> and paste here. <br/>like, 
+                <span style="padding: 4px; font-weight: bold;">https://www.youtube.com/watch?v=<span style="background-color: yellow;">rfscVS0vtbw</span></span>&#60;-- this yellow background part
+            </h5>
+            <div style="display: flex; justify-content: center;">
+                <form action="/upload-video/" method="POST" style="width: 80%;">{%csrf_token%}
+                    <label>YouTube Video Id:</label>
+                    <input name="ytvid" type="text" placeholder=" e.g. rfscVS0vtbw" style="border-radius: 5px; width: 100%; border: solid 1px lightgray;"/><br/><br/>
+                    <label>Caption:</label>
+                    <input name="caption" type="text" style="border-radius: 5px; width: 100%; border: solid 1px lightgray;"/><br/><br/>
+                    <label>Description:</label><br/>
+                    <textarea name="description" type="text" style="border-radius: 5px; width: 100%; border: solid 1px lightgray;"></textarea>
+                    <br/><br/>
+                    <button type="submit" style="border-radius: 5px;" class="button red hover-grey">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock body %}

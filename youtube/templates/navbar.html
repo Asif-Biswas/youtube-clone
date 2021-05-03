@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=0">
+    <title>Youtube</title>
+</head>
+<body style="position: relative;">
+    {% if messages %}
+    <div id="messages" style="display: flex; justify-content: space-between;" class="green">
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        <p onclick="hideMessage()" style="padding: 4px; margin-right: 16px; cursor: pointer;">x</p>
+    </div>
+    {% endif %}
+    <div style="display: flex; justify-content: space-between; background-color: rgb(240, 240, 240);">
+        <div style="display: flex; justify-content: flex-start;">
+            <div class="" onclick="showSidebar()" style="transform: rotate(90deg); margin: 0 8px; letter-spacing: -2px; font-weight: bolder; cursor: pointer;">|||</div>
+            <a href={% url 'home' %}>
+                <h4 style="margin-left: 24px; font-weight: bolder;">YouTube</h4>
+            </a>
+        </div>
+        <div style="width: 50%; margin-top: 8px;">
+            <form style="display: flex; justify-content: center; align-items: center;" class="hide-small" action="/search/" method="GET">
+                
+                {% if search %}
+                <input type="text" placeholder="Search" id="search" name="caption"
+                style="width: 100%; height: 36px;" value={{caption}} required
+                />
+                {%else%}
+                <input type="text" placeholder="Search" id="search" name="caption"
+                style="width: 100%; height: 36px;" required
+                />
+                {% endif %}
+                
+                <button type="submit" style="height: 36px; padding: 0 16px;">Search </button>
+            </form>
+        </div>
+        <div class="hide-medium hide-large">
+            
+            <h3 onclick="showSearch()" style="margin-bottom: -12px; margin-right: 16px; cursor: pointer;">&#128269;</h3>
+        </div>
+        
+        <div style="margin-right: 24px;">
+            {% if user.is_authenticated %}
+            <a href={% url 'upload'%} style="text-decoration: none;">
+                <h4 style="border: solid rgb(170, 170, 170) 1px; font-weight: bolder; padding: 0 8px;" class="hover-black">Upload+</h4>
+            </a>
+            {% else %}
+            <h4 onclick="registration()" class="hover-black" style="border: solid rgb(170, 170, 170) 1px; font-weight: bolder; padding: 0 8px; cursor: pointer;">Upload+</h4>
+            {% endif %}
+                <div>
+
+            </div>
+        </div>
+    </div>
+    <div style="background-color: rgb(240,240, 240);" class="hide-large hide-medium">
+    
+        {% if search %}
+        <form action="/search/" method="GET" style="display: flex; margin: 0 20px; padding-bottom: 8px;" id="showSearch" class="">
+            <input type="text" placeholder="Search" id="search" name="caption"
+            style="width: 100%; height: 36px;" value={{caption}} required
+            />
+            <button type="submit" style="height: 36px; padding: 0 16px;">Search </button>
+        </form>
+        {%else%}
+        <form action="/search/" method="GET" style="display: flex; margin: 0 20px; padding-bottom: 8px;" id="showSearch" class="hide">
+            <input type="text" placeholder="Search" id="search" name="caption"
+            style="width: 100%; height: 36px;" required
+            />
+            <button type="submit" style="height: 36px; padding: 0 16px;">Search </button>
+        </form>
+        {% endif %}
+        
+    </div>
+    <div style="position: fixed; top: -10px; z-index: 2; box-shadow: 2px 2px 15px gray;" id="sidebar" class="hide">
+        <div id="t" class="" style="height: 100vh; background-color: rgb(230, 230, 230);">
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; width: 300px;">
+                <h4 style="margin-left: 24px; font-weight: bolder;">YouTube</h4>
+                <h4 class="show-after-half-sec hover-red hover-border-red" onclick="hideSidebar()" style="margin:12px; font-weight: bolder; cursor: pointer; color: black; border: solid 1px black; padding: 0 8px;">X</h4>
+            </div>
+            <hr style="border: solid 1px rgb(80, 80, 80); margin-top: -8px;"/>
+            {% if user.is_authenticated %}
+            <a style="text-decoration: none;" href={%url 'channel' user.id %}><h4 class="hover-white show-after-half-sec" style="padding: 4px 8px; border: darkgray 1px solid; margin: 0px 4px; border-radius: 10px; text-align: center;">{{ user.username}}</h4></a>
+            <br/>
+            <a class="show-after-half-sec" style="margin: -14px 0 0 8px;" href={% url 'handleLogout'%}><button style="margin: -14px 0 0 1px; border-radius: 5px;" class="button red">Logout</button></a>
+            <hr style="border: solid 1px rgb(80, 80, 80);"/>
+            <h4 class="show-after-half-sec" style="padding-left: 8px;">Subscriptions</h4>
+            <div class="show-after-half-sec" style="padding: 0 16px;">
+                {%if subscriptions%}
+                    {%for s in subscriptions%}
+                    <a href={%url 'channel' s.channel.id%} style="text-decoration: none;">
+                        <div style="display: flex; padding: 8px; border-radius: 10px;" class="hover-white">
+                            <img src="" width="30px" height="30px" style="border-radius: 50%;"/>
+                            <p style="margin-top: 2px; margin-left: 12px;">{{s.channel}}</p>
+                        </div>
+                </a>
+                    {%endfor%}
+                {%else%}
+                <li class="show-after-half-sec" style="margin-left: 8px;">You didn't subscribe any channel.</li>
+                {%endif%}
+            </div>
+            {% else %}
+            <div style="text-align: center;">
+                <button onclick="registration()" class="button blue" style="padding: 8px 36px; border-radius: 5px;">Login</button>
+            </div>
+            <hr style="border: solid 1px rgb(80, 80, 80);"/>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="registration" class="hide">
+    <div style="min-width: 40%; background-color: rgb(219, 219, 219); position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; border-radius: 10px;" class="card-4">
+        <div id="closeButton" onclick="registration()" style="position: absolute; right: 16px; top: 8px; border: red 1px solid; padding: 4px 8px; cursor: pointer;" class="hover-red">X</div>
+        <div style="min-width: 300px; padding: 16px; margin-top: 36px;">
+            <div style="text-align: center;">
+                <div id="invalid"></div>
+                <div id="login" >
+                    <input required id="lUsername" type="text" placeholder="Username" style="padding-left: 8px; border-radius: 5px; border: 1px rgb(230, 230, 230) solid; height: 36px; width: 100%; max-width: 400px;"/>
+                    <br/><br/>
+                    <input required id="lPass" type="password" placeholder="Password" style="padding-left: 8px; border-radius: 5px; border: 1px rgb(230, 230, 230) solid; height: 36px; width: 100%; max-width: 400px;"/>
+                    <br/><br/>
+                    <button onclick="handleLogin()" style="width: 100%; border-radius: 5px; max-width: 400px;" class="button blue">Login</button>
+                    <p style="text-align: center;">or</p>
+                    <button onclick="signup()" style="text-align: center;" class="button green">Create New Account</button>
+                </div>
+
+                <div id="signup" class="hide">
+                    <input id="sUsername" required type="text" placeholder="Username" style="padding-left: 8px; border-radius: 5px; border: 1px rgb(230, 230, 230) solid; height: 36px; width: 100%; max-width: 400px;"/>
+                    <br/><br/>
+                    <input id="sPass1" required type="password" placeholder="Password" style="padding-left: 8px; border-radius: 5px; border: 1px rgb(230, 230, 230) solid; height: 36px; width: 100%; max-width: 400px;"/>
+                    <br/><br/>
+                    <input id="sPass2" required type="password" placeholder="Password (again)" style="padding-left: 8px; border-radius: 5px; border: 1px rgb(230, 230, 230) solid; height: 36px; width: 100%; max-width: 400px;"/>
+                    <br/><br/>
+                    <button onclick="handleSignip()" style="width: 100%; border-radius: 5px; max-width: 400px;" class="button green">Create Account</button>
+                    <p style="text-align: center;">or</p>
+                    <p style="text-align: center;">Already have an account?</p>
+                    <button onclick="login()" style="text-align: center;" class="button blue">Login here</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    {% block body %}
+    
+    {% endblock body %}
+    
+
+
+    <script>
+        function showSidebar(){
+            document.getElementById("sidebar").className="showSidebar"
+        }
+        function hideSidebar(){
+            document.getElementById("sidebar").className="hide"
+        }
+        function showSearch(){
+            var className = document.getElementById("showSearch").className
+            if(className===''){
+                document.getElementById("showSearch").className='hide'
+            }else{
+                document.getElementById("showSearch").className=''
+            }
+        }
+        function signup(){
+            document.getElementById("login").className='hide'
+            document.getElementById("signup").className='animate-zoom'
+            document.getElementById("invalid").innerHTML=''
+        }
+        function login(){
+            document.getElementById("signup").className='hide'
+            document.getElementById("login").className='animate-zoom'
+            document.getElementById("invalid").innerHTML=''
+        }
+        function registration(){
+            if(document.getElementById("registration").className==='hide'){
+                document.getElementById("registration").className='show'
+            }else{
+                document.getElementById("registration").className='hide'
+            }
+        }
+
+        function handleSignip(){
+            var username = document.getElementById("sUsername").value
+            var pass1 = document.getElementById("sPass1").value
+            var pass2 = document.getElementById("sPass2").value
+            
+            var data = JSON.stringify({
+                username: username,
+                pass1: pass1,
+                pass2: pass2
+            })
+            fetch("/handleSignup/", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Contentt-type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        location.reload()
+                    }
+                    if(result.response==='Username can\'t be empty.'){
+                        document.getElementById("invalid").innerHTML += '<li>'+result.response+'.</li><br/>'
+                    }
+                    if(result.response==='Username must contain letters, digits and @/./+/-/_ only.'){
+                        document.getElementById("invalid").innerHTML += '<li>'+result.response+'.</li><br/>'
+                    }
+                    if(result.response==='The two password field didn\'t match.'){
+                        document.getElementById("invalid").innerHTML += '<li>'+result.response+'.</li><br/>'
+                    }
+                    if(result.response==='This username is already taken. Please try another one.'){
+                        document.getElementById("invalid").innerHTML += '<li>'+result.response+'.</li><br/>'
+                    }
+                    if(result.response==='Your password must contain at least 4 characters.'){
+                        document.getElementById("invalid").innerHTML += '<li>'+result.response+'.</li><br/>'
+                    }
+                })
+            })
+        }
+
+        function handleLogin(){
+            var username = document.getElementById("lUsername").value
+            var pass = document.getElementById("lPass").value
+            
+            var data = JSON.stringify({
+                username: username,
+                pass: pass,
+            })
+            fetch("/handleLogin/", {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Contentt-type': 'application/json',
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        location.reload()
+                    }else{
+                        document.getElementById("invalid").innerHTML = '<li>'+result.response+'.</li><br/>'
+                    }
+                })
+            })
+        }
+
+        function hideMessage(){
+            document.getElementById("messages").className='hide'
+        }
+        
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        let csrftoken = this.getCookie('csrftoken');
+    </script>
+</body>
+</html>

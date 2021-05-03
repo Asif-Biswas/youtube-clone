@@ -1,0 +1,31 @@
+{% extends 'navbar.html' %}
+{% block body %}
+
+{% if result%}
+{% for r in result %}
+<a style="text-decoration: none;" href={%url 'video' r.id%}>
+<div style="display: flex; padding: 8px; width: 100%;" class="marginLeft36px">
+    
+    <div class="video-container2" style="position: relative;">
+        <div class="opcty"></div>
+        <iframe id="iframe{{r.id}}" frameborder="1" width="350px" height="197px"  allow="fullscreen;"
+            src="https://www.youtube.com/embed/{{r.youtubeVideoId}}"></iframe>
+    </div>
+    
+    <div style="padding-left: 8px; width: 49.99%;">
+        <h5 class="caption" style="margin-top: -2px;">{{r.caption}}</h5>
+        <p style="margin-top: -8px; font-size: 12px;">{{r.channel}}</p>
+        <p style="margin-top: -12px; font-size: 10px;">{{r.views}} views.</p>
+    </div>
+</div></a>
+{% endfor %}
+{% if result.has_next %}
+<div style="padding: 8px;" class="marginLeft36px">
+    <a href="?caption={{caption|urlencode}}&page={{result.next_page_number}}"><button type="submit" class="button light-grey">See more results</button></a>
+</div>
+{% endif %}
+{% else %}
+<h2>No result found.</h2>
+{% endif %}
+
+{% endblock body %}

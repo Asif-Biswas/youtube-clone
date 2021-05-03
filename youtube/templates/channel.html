@@ -1,0 +1,80 @@
+{% extends 'navbar.html' %}
+{% block body %}
+
+<div>
+    {% for channel in channel %}
+    <div style="display: flex; justify-content: space-between; margin: 8px 5%;">
+        <div style="display: flex;" class="chwoi">
+            <img src="" height="50px" width="50px" style="border-radius: 50%; margin: 8px 0;"/>
+            <div style="margin-left: 8px;">
+                <h3>{{channel}}</h3>
+                <p style="margin-top: -8px;"><span id="totalSubscriber" style="padding-right: 5px;">{{subscriber}}</span> subscriber</p>
+            </div>
+        </div>
+        <div style="margin-top: 16px;">
+            {% if user.is_authenticated %}
+                {%if subscribed%}
+                <button id="subscribe" onclick="subscribe({{channel.id}})" style="border-radius: 5px;" class="button light-grey hover-grey">Subscribed</button>
+                {%else%}
+                <button id="subscribe" onclick="subscribe({{channel.id}})" style="border-radius: 5px;" class="button red hover-light-grey">Subscribe</button>
+                {%endif%}
+            {% else %}
+            <button onclick="registration()" style="border-radius: 5px;" class="button red hover-light-grey">Subscribe</button>
+            {% endif %}
+            
+        </div>
+    </div>
+    {% endfor %}
+    <hr style="margin: 0 16px;"/>
+
+    <div class="row" style="margin: 0 8px;">
+        {% for v in videos %}
+        <a href={% url 'video' v.id %}>
+        <div class="col wid" style="padding: 8px;">
+            <div style="background-color: rgb(250, 250, 250);">
+            <div class="video-container">
+                <div class="opcty">a</div>
+                <iframe width="400px" height="300px" frameborder="0" allow="fullscreen;"
+                src="https://www.youtube.com/embed/{{v.youtubeVideoId}}"></iframe>
+            </div>
+            <div style="display: flex;">
+                
+                <div style="padding: 0 8px;">
+                    <h6 style="line-height: 95%;">{{v.caption}}</h6>
+                    <p style="margin-top: -8px; font-size: 10px;">{{v.views}} views</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        </a>
+        {% endfor %}
+    
+    </div>
+</div>
+<script>
+    function subscribe(id){
+        fetch("/subscribe/"+id+"/", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                }
+            })
+            .then((response)=>{
+                response.json().then((result)=>{
+                    if(result.response==='ok'){
+                        document.getElementById("subscribe").className='button light-grey hover-grey'
+                        document.getElementById("subscribe").innerHTML='Subscribed'
+                        var totalSubscriber = document.getElementById("totalSubscriber").innerHTML
+                        document.getElementById("totalSubscriber").innerHTML = parseInt(totalSubscriber) + 1
+                    }else{
+                        var totalSubscriber = document.getElementById("totalSubscriber").innerHTML
+                        document.getElementById("totalSubscriber").innerHTML = parseInt(totalSubscriber) - 1
+                        document.getElementById("subscribe").className='hover-light-grey red button'
+                        document.getElementById("subscribe").innerHTML='Subscribe'
+                    }
+                })
+            })
+        
+    }
+</script>
+{% endblock body %}
